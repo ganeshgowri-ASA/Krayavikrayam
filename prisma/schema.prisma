@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Pipeline {
+  id        String   @id @default(cuid())
+  name      String
+  orgId     String   @map("org_id")
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  stages PipelineStage[]
+
+  @@map("pipelines")
+}
+
+model PipelineStage {
+  id          String   @id @default(cuid())
+  name        String
+  order       Int
+  probability Float    @default(0)
+  pipelineId  String   @map("pipeline_id")
+  color       String   @default("#3b82f6")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  pipeline Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  deals    Deal[]
+
+  @@index([pipelineId])
+  @@map("pipeline_stages")
+}
+
+model Deal {
+  id                String     @id @default(cuid())
+  title             String
+  value             Float      @default(0)
+  currency          String     @default("USD")
+  expectedCloseDate DateTime?  @map("expected_close_date")
+  stageId           String     @map("stage_id")
+  contactId         String?    @map("contact_id")
+  contactName       String?    @map("contact_name")
+  accountId         String?    @map("account_id")
+  accountName       String?    @map("account_name")
+  ownerId           String?    @map("owner_id")
+  ownerName         String?    @map("owner_name")
+  orgId             String     @map("org_id")
+  probability       Float      @default(0)
+  status            DealStatus @default(OPEN)
+  notes             String?
+  createdAt         DateTime   @default(now()) @map("created_at")
+  updatedAt         DateTime   @updatedAt @map("updated_at")
+
+  stage      PipelineStage  @relation(fields: [stageId], references: [id])
+  activities DealActivity[]
+
+  @@index([stageId])
+  @@index([orgId])
+  @@index([status])
+  @@map("deals")
+}
+
+enum DealStatus {
+  OPEN
+  WON
+  LOST
+}
+
+model DealActivity {
+  id        String       @id @default(cuid())
+  dealId    String       @map("deal_id")
+  type      ActivityType
+  title     String
+  notes     String?
+  userId    String?      @map("user_id")
+  userName  String?      @map("user_name")
+  metadata  Json?
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+  @@map("deal_activities")
+}
+
+enum ActivityType {
+  NOTE
+  CALL
+  EMAIL
+  MEETING
+  STAGE_CHANGE
+  STATUS_CHANGE
+  TASK
+  OTHER
+}
+
+model Quota {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  userName       String?  @map("user_name")
+  period         String
+  targetAmount   Float    @map("target_amount")
+  achievedAmount Float    @default(0) @map("achieved_amount")
+  orgId          String   @map("org_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, period])
+  @@index([orgId])
+  @@map("quotas")
+}

@@ -7,7 +7,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─── Auth Models ────────────────────────────────────────────────────────────
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
+}
+
+enum ContactStatus {
+  LEAD
+  PROSPECT
+  CUSTOMER
+  CHURNED
+  INACTIVE
+}
+
+enum ContactSource {
+  WEBSITE
+  REFERRAL
+  LINKEDIN
+  COLD_CALL
+  TRADE_SHOW
+  ADVERTISEMENT
+  OTHER
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+}
+
+// ─── Auth / Org Models ───────────────────────────────────────────────────────
 
 model Account {
   id                String  @id @default(cuid())
@@ -46,20 +81,24 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// ─── Core Models ────────────────────────────────────────────────────────────
-
 model User {
-  id            String       @id @default(cuid())
-  name          String?
-  email         String?      @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  accounts      Account[]
-  sessions      Session[]
-  memberships   Membership[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id             String       @id @default(cuid())
+  name           String?
+  email          String?      @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String?
+  role           MemberRole   @default(MEMBER)
+  orgId          String?
+  accounts       Account[]
+  sessions       Session[]
+  memberships    Membership[]
+  contacts       Contact[]    @relation("CreatedByUser")
+  activities     Activity[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization? @relation("OrgUsers", fields: [orgId], references: [id])
 }
 
 model Organization {
@@ -68,15 +107,11 @@ model Organization {
   slug        String       @unique
   logo        String?
   memberships Membership[]
+  users       User[]       @relation("OrgUsers")
+  contacts    Contact[]
+  companies   Company[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-}
-
-enum MemberRole {
-  OWNER
-  ADMIN
-  MEMBER
-  VIEWER
 }
 
 model Membership {
@@ -92,4 +127,90 @@ model Membership {
   @@unique([userId, organizationId])
   @@index([userId])
   @@index([organizationId])
+}
+
+// ─── CRM Models ──────────────────────────────────────────────────────────────
+
+model Contact {
+  id           String        @id @default(cuid())
+  name         String
+  email        String?
+  phone        String?
+  company      String?
+  source       ContactSource @default(OTHER)
+  status       ContactStatus @default(LEAD)
+  customFields Json?
+  orgId        String
+  createdById  String
+  companyId    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  organization Organization  @relation(fields: [orgId], references: [id])
+  createdBy    User          @relation("CreatedByUser", fields: [createdById], references: [id])
+  companyRef   Company?      @relation(fields: [companyId], references: [id])
+  activities   Activity[]
+  contactTags  ContactTag[]
+
+  @@index([orgId])
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+  @@index([source])
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  industry    String?
+  website     String?
+  size        String?
+  revenue     String?
+  address     String?
+  orgId       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id])
+  contacts     Contact[]
+
+  @@index([orgId])
+}
+
+model Activity {
+  id          String       @id @default(cuid())
+  type        ActivityType
+  subject     String
+  description String?      @db.Text
+  contactId   String?
+  dealId      String?
+  userId      String
+  scheduledAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  contact Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id])
+
+  @@index([contactId])
+  @@index([userId])
+}
+
+model Tag {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  color     String       @default("#6B7280")
+  createdAt DateTime     @default(now())
+
+  contactTags ContactTag[]
+}
+
+model ContactTag {
+  contactId String
+  tagId     String
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contactId, tagId])
 }

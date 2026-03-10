@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
@@ -44,16 +44,16 @@ async function main() {
   // Users
   const users = await Promise.all([
     prisma.user.create({
-      data: { name: "Ganesh Gowri", email: "ganesh@example.com", role: "admin", orgId: org.id },
+      data: { name: "Ganesh Gowri", email: "ganesh@example.com", role: "ADMIN", orgId: org.id },
     }),
     prisma.user.create({
-      data: { name: "Priya Sharma", email: "priya@example.com", role: "manager", orgId: org.id },
+      data: { name: "Priya Sharma", email: "priya@example.com", role: "MANAGER", orgId: org.id },
     }),
     prisma.user.create({
-      data: { name: "Rahul Kumar", email: "rahul@example.com", role: "member", orgId: org.id },
+      data: { name: "Rahul Kumar", email: "rahul@example.com", role: "MEMBER", orgId: org.id },
     }),
     prisma.user.create({
-      data: { name: "Anita Desai", email: "anita@example.com", role: "member", orgId: org.id },
+      data: { name: "Anita Desai", email: "anita@example.com", role: "MEMBER", orgId: org.id },
     }),
   ]);
 
@@ -76,7 +76,7 @@ async function main() {
   const contacts = await Promise.all(
     contactsData.map((c) =>
       prisma.contact.create({
-        data: { ...c, tags: ["prospect"], customFields: {}, orgId: org.id },
+        data: { ...c, customFields: {}, orgId: org.id, createdById: users[0].id },
       })
     )
   );

@@ -10,6 +10,10 @@ const signupSchema = z.object({
   orgName: z.string().min(1),
 });
 
+function generateSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") + "-" + Math.random().toString(36).substring(2, 7);
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -23,14 +27,14 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const org = await prisma.organization.create({
-      data: { name: orgName },
+      data: { name: orgName, slug: generateSlug(orgName) },
     });
 
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        hashedPassword,
+        password: hashedPassword,
         role: "ADMIN",
         orgId: org.id,
       },

@@ -1,5 +1,10 @@
 generator client {
+<<<<<<< HEAD
   provider = "prisma-client-js"
+=======
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+>>>>>>> origin/claude/agentic-ai-chatbot-dashboard-Aj6WV
 }
 
 datasource db {
@@ -7,6 +12,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+<<<<<<< HEAD
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
 enum MemberRole {
@@ -653,4 +659,87 @@ model QuoteItem {
   product Product @relation(fields: [productId], references: [id])
 
   @@index([quoteId])
+=======
+model AiAgentLog {
+  id          String   @id @default(uuid())
+  agentType   String   @map("agent_type")
+  input       String
+  output      String
+  status      String   @default("pending")
+  durationMs  Int?     @map("duration_ms")
+  orgId       String   @map("org_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("ai_agent_logs")
+}
+
+model ChatbotSession {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  orgId     String   @map("org_id")
+  messages  Json     @default("[]")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("chatbot_sessions")
+}
+
+model ChurnSignal {
+  id         String   @id @default(uuid())
+  contactId  String   @map("contact_id")
+  riskScore  Float    @map("risk_score")
+  factors    Json     @default("[]")
+  detectedAt DateTime @default(now()) @map("detected_at")
+
+  @@map("churn_signals")
+>>>>>>> origin/claude/agentic-ai-chatbot-dashboard-Aj6WV
+}
+
+// ─── Agentic AI Models ────────────────────────────────────────────────────────
+
+model AiAgentLog {
+  id         String   @id @default(cuid())
+  agentType  String
+  input      String   @db.Text
+  output     String   @db.Text
+  status     String   @default("pending")
+  durationMs Int?
+  orgId      String
+  createdAt  DateTime @default(now())
+
+  @@index([orgId])
+  @@index([agentType])
+}
+
+model ChatbotSession {
+  id        String   @id @default(cuid())
+  userId    String
+  orgId     String
+  messages  Json     @default("[]")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([orgId])
+}
+
+model ChurnSignal {
+  id         String   @id @default(cuid())
+  contactId  String
+  riskScore  Float
+  factors    Json     @default("[]")
+  detectedAt DateTime @default(now())
+
+  @@index([contactId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([read])
 }

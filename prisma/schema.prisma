@@ -83,6 +83,34 @@ enum PostStatus {
   FAILED
 }
 
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+}
+
 // ─── Auth / Org Models ───────────────────────────────────────────────────────
 
 model Account {
@@ -137,7 +165,7 @@ model User {
   contacts       Contact[]    @relation("CreatedByUser")
   activities     Activity[]
   campaigns      Campaign[]
-  leadScore      LeadScore?   @relation("UserLeadScores")
+  leadScores     LeadScore[]  @relation("UserLeadScores")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
@@ -313,6 +341,7 @@ model Deal {
 
   stage          PipelineStage  @relation(fields: [stageId], references: [id])
   dealActivities DealActivity[]
+  quotes         Quote[]
 
   @@index([stageId])
   @@index([orgId])
@@ -380,13 +409,14 @@ model EmailTemplate {
 
 model LeadScore {
   id        String   @id @default(cuid())
-  contactId String   @unique
+  contactId String
   score     Int      @default(0)
   factors   Json
   contact   User     @relation("UserLeadScores", fields: [contactId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([contactId])
   @@index([score])
 }
 
@@ -450,4 +480,177 @@ model ChannelMetric {
   @@unique([socialAccountId, date])
   @@index([socialAccountId])
   @@index([date])
+}
+
+// ─── Service Tickets ──────────────────────────────────────────────────────────
+
+model Ticket {
+  id          String         @id @default(cuid())
+  subject     String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  contactId   String?
+  assignedTo  String?
+  orgId       String
+  slaDeadline DateTime?
+  resolvedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  comments   TicketComment[]
+  csatSurvey CsatSurvey?
+
+  @@index([orgId])
+  @@index([status])
+  @@index([priority])
+}
+
+model TicketComment {
+  id         String   @id @default(cuid())
+  ticketId   String
+  userId     String
+  content    String
+  isInternal Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model SlaRule {
+  id                  String         @id @default(cuid())
+  name                String
+  priority            TicketPriority
+  responseTimeHours   Int
+  resolutionTimeHours Int
+  orgId               String
+  createdAt           DateTime       @default(now())
+
+  @@index([orgId])
+}
+
+model KnowledgeBase {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  category    String
+  orgId       String
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([orgId])
+  @@index([category])
+}
+
+model CsatSurvey {
+  id        String   @id @default(cuid())
+  ticketId  String   @unique
+  rating    Int?
+  feedback  String?
+  createdAt DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+// ─── ERP-Light ────────────────────────────────────────────────────────────────
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sku         String   @unique
+  price       Float
+  currency    String   @default("USD")
+  orgId       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  invoiceItems InvoiceItem[]
+  quoteItems   QuoteItem[]
+
+  @@index([orgId])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  contactId     String?
+  accountId     String?
+  status        InvoiceStatus @default(DRAFT)
+  dueDate       DateTime?
+  totalAmount   Float         @default(0)
+  orgId         String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  items    InvoiceItem[]
+  payments Payment[]
+
+  @@index([orgId])
+  @@index([status])
+}
+
+model InvoiceItem {
+  id        String @id @default(cuid())
+  invoiceId String
+  productId String
+  quantity  Int    @default(1)
+  unitPrice Float
+  total     Float
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([invoiceId])
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  amount      Float
+  paymentDate DateTime
+  method      String
+  reference   String?
+  createdAt   DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+// ─── CPQ (Configure-Price-Quote) ─────────────────────────────────────────────
+
+model Quote {
+  id          String      @id @default(cuid())
+  quoteNumber String      @unique
+  dealId      String?
+  contactId   String?
+  status      QuoteStatus @default(DRAFT)
+  validUntil  DateTime?
+  totalAmount Float       @default(0)
+  orgId       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  deal  Deal?       @relation(fields: [dealId], references: [id])
+  items QuoteItem[]
+
+  @@index([dealId])
+}
+
+model QuoteItem {
+  id              String @id @default(cuid())
+  quoteId         String
+  productId       String
+  quantity        Int    @default(1)
+  unitPrice       Float
+  discountPercent Float  @default(0)
+
+  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([quoteId])
 }

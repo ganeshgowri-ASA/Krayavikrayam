@@ -7,6 +7,7 @@ import {
   Bot,
   Building2,
   Home,
+  Megaphone,
   Package,
   Settings,
   ShoppingCart,
@@ -20,6 +21,7 @@ const navigation = [
   { name: "Orders", href: "/dashboard/orders", icon: ShoppingCart },
   { name: "Products", href: "/dashboard/products", icon: Package },
   { name: "Customers", href: "/dashboard/customers", icon: Users },
+  { name: "Marketing", href: "/dashboard/marketing/campaigns", icon: Megaphone },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { name: "AI Agents", href: "/dashboard/agents", icon: Bot },
   { name: "Organization", href: "/dashboard/organization", icon: Building2 },
@@ -46,7 +48,7 @@ export function DashboardSidebar() {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navigation.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.name}

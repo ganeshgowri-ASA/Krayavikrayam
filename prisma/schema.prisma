@@ -58,18 +58,22 @@ model User {
   accounts      Account[]
   sessions      Session[]
   memberships   Membership[]
+  campaigns     Campaign[]
+  leadScore     LeadScore?   @relation("LeadScores")
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 }
 
 model Organization {
-  id          String       @id @default(cuid())
-  name        String
-  slug        String       @unique
-  logo        String?
-  memberships Membership[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id             String          @id @default(cuid())
+  name           String
+  slug           String          @unique
+  logo           String?
+  memberships    Membership[]
+  campaigns      Campaign[]
+  socialAccounts SocialAccount[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 }
 
 enum MemberRole {
@@ -92,4 +96,138 @@ model Membership {
   @@unique([userId, organizationId])
   @@index([userId])
   @@index([organizationId])
+}
+
+// ─── Marketing Models ──────────────────────────────────────────────────────
+
+enum CampaignType {
+  EMAIL
+  SMS
+  SOCIAL
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+model Campaign {
+  id             String         @id @default(cuid())
+  name           String
+  type           CampaignType
+  status         CampaignStatus @default(DRAFT)
+  organizationId String
+  createdBy      String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creator        User           @relation(fields: [createdBy], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([organizationId])
+  @@index([createdBy])
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  subject   String
+  htmlBody  String   @db.Text
+  jsonBody  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LeadScore {
+  id        String   @id @default(cuid())
+  contactId String
+  score     Int      @default(0)
+  factors   Json
+  contact   User     @relation("LeadScores", fields: [contactId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([contactId])
+  @@index([score])
+}
+
+model DripSequence {
+  id        String   @id @default(cuid())
+  name      String
+  steps     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  FACEBOOK
+  LINKEDIN
+  WHATSAPP
+  YOUTUBE
+  X_TWITTER
+  TELEGRAM
+  REFERRAL
+}
+
+model SocialAccount {
+  id             String         @id @default(cuid())
+  platform       SocialPlatform
+  accountName    String
+  accountId      String
+  accessToken    String?        @db.Text
+  organizationId String
+  followersCount Int            @default(0)
+  isConnected    Boolean        @default(false)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  posts          SocialPost[]
+  metrics        ChannelMetric[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([organizationId])
+  @@index([platform])
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+model SocialPost {
+  id              String        @id @default(cuid())
+  content         String        @db.Text
+  platform        SocialPlatform
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  status          PostStatus    @default(DRAFT)
+  socialAccountId String
+  engagement      Json?
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([socialAccountId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model ChannelMetric {
+  id              String        @id @default(cuid())
+  socialAccountId String
+  date            DateTime
+  followers       Int           @default(0)
+  impressions     Int           @default(0)
+  engagementRate  Float         @default(0)
+  clicks          Int           @default(0)
+  conversions     Int           @default(0)
+  revenue         Float         @default(0)
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+
+  @@index([socialAccountId])
+  @@index([date])
+  @@unique([socialAccountId, date])
 }

@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Organization ────────────────────────────────────────────
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  plan      String   @default("free")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users           User[]
+  contacts        Contact[]
+  deals           Deal[]
+  tickets         Ticket[]
+  workflows       Workflow[]
+  automationRules AutomationRule[]
+  webhookConfigs  WebhookConfig[]
+  integrationLogs IntegrationLog[]
+  apiKeys         ApiKey[]
+
+  @@map("organizations")
+}
+
+// ─── User ────────────────────────────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      String   @default("member") // admin, manager, member
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  assignedDeals   Deal[]
+  assignedTickets Ticket[]
+  tasks           Task[]
+
+  @@map("users")
+}
+
+// ─── Contact ─────────────────────────────────────────────────
+model Contact {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  company   String?
+  source    String?
+  tags      Json     @default("[]")
+  customFields Json  @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  deals   Deal[]
+  tickets Ticket[]
+
+  @@map("contacts")
+}
+
+// ─── Deal ────────────────────────────────────────────────────
+model Deal {
+  id        String   @id @default(cuid())
+  title     String
+  value     Float    @default(0)
+  currency  String   @default("INR")
+  stage     String   @default("lead") // lead, qualified, proposal, negotiation, won, lost
+  priority  String   @default("medium")
+  closedAt  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  assigneeId String?
+  assignee   User?   @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@map("deals")
+}
+
+// ─── Ticket ──────────────────────────────────────────────────
+model Ticket {
+  id        String   @id @default(cuid())
+  subject   String
+  description String?
+  status    String   @default("open") // open, in_progress, resolved, closed
+  priority  String   @default("medium")
+  channel   String   @default("email")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  assigneeId String?
+  assignee   User?   @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@map("tickets")
+}
+
+// ─── Task ────────────────────────────────────────────────────
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("pending") // pending, in_progress, completed
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assigneeId String?
+  assignee   User?   @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@map("tasks")
+}
+
+// ─── Workflow (Visual Workflow Builder) ──────────────────────
+model Workflow {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  triggerType   String   // new_contact, deal_stage_change, ticket_created, scheduled
+  triggerConfig Json     @default("{}")
+  conditions    Json     @default("[]")
+  actions       Json     @default("[]")
+  nodes         Json     @default("[]") // react-flow nodes
+  edges         Json     @default("[]") // react-flow edges
+  isActive      Boolean  @default(false)
+  runCount      Int      @default(0)
+  lastRunAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  runs WorkflowRun[]
+
+  @@map("workflows")
+}
+
+// ─── Workflow Run History ────────────────────────────────────
+model WorkflowRun {
+  id         String   @id @default(cuid())
+  status     String   @default("running") // running, completed, failed
+  triggeredBy String?
+  input      Json     @default("{}")
+  output     Json     @default("{}")
+  error      String?
+  startedAt  DateTime @default(now())
+  completedAt DateTime?
+
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@map("workflow_runs")
+}
+
+// ─── Automation Rule ─────────────────────────────────────────
+model AutomationRule {
+  id         String   @id @default(cuid())
+  name       String
+  module     String   // contacts, deals, tickets
+  event      String   // created, updated, stage_changed
+  conditions Json     @default("[]")
+  actionType String   // send_email, create_task, update_field, webhook
+  actionConfig Json   @default("{}")
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@map("automation_rules")
+}
+
+// ─── Webhook Config ──────────────────────────────────────────
+model WebhookConfig {
+  id       String   @id @default(cuid())
+  url      String
+  events   Json     @default("[]") // ["contact.created", "deal.updated", ...]
+  secret   String
+  isActive Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@map("webhook_configs")
+}
+
+// ─── Integration Log ─────────────────────────────────────────
+model IntegrationLog {
+  id              String   @id @default(cuid())
+  integrationType String   // gmail, google_calendar, whatsapp, razorpay, slack, zapier, resend
+  action          String
+  status          String   @default("success") // success, error
+  payload         Json     @default("{}")
+  response        Json     @default("{}")
+  createdAt       DateTime @default(now())
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@map("integration_logs")
+}
+
+// ─── API Key ─────────────────────────────────────────────────
+model ApiKey {
+  id        String   @id @default(cuid())
+  name      String
+  key       String   @unique
+  prefix    String   // first 8 chars for display
+  isActive  Boolean  @default(true)
+  lastUsedAt DateTime?
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}

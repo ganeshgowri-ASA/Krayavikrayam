@@ -40,6 +40,16 @@ enum ActivityType {
   EMAIL
   MEETING
   NOTE
+  STAGE_CHANGE
+  STATUS_CHANGE
+  TASK
+  OTHER
+}
+
+enum DealStatus {
+  OPEN
+  WON
+  LOST
 }
 
 // ─── Auth / Org Models ───────────────────────────────────────────────────────
@@ -213,4 +223,94 @@ model ContactTag {
   tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([contactId, tagId])
+}
+
+// ─── Sales Pipeline Models ───────────────────────────────────────────────────
+
+model Pipeline {
+  id        String   @id @default(cuid())
+  name      String
+  orgId     String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stages PipelineStage[]
+
+  @@index([orgId])
+}
+
+model PipelineStage {
+  id          String   @id @default(cuid())
+  name        String
+  order       Int
+  probability Float    @default(0)
+  pipelineId  String
+  color       String   @default("#3b82f6")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pipeline Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  deals    Deal[]
+
+  @@index([pipelineId])
+}
+
+model Deal {
+  id                String     @id @default(cuid())
+  title             String
+  value             Float      @default(0)
+  currency          String     @default("USD")
+  expectedCloseDate DateTime?
+  stageId           String
+  contactId         String?
+  contactName       String?
+  accountId         String?
+  accountName       String?
+  ownerId           String?
+  ownerName         String?
+  orgId             String
+  probability       Float      @default(0)
+  status            DealStatus @default(OPEN)
+  notes             String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  stage      PipelineStage  @relation(fields: [stageId], references: [id])
+  dealActivities DealActivity[]
+
+  @@index([stageId])
+  @@index([orgId])
+  @@index([status])
+}
+
+model DealActivity {
+  id        String       @id @default(cuid())
+  dealId    String
+  type      ActivityType
+  title     String
+  notes     String?
+  userId    String?
+  userName  String?
+  metadata  Json?
+  createdAt DateTime     @default(now())
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+}
+
+model Quota {
+  id             String   @id @default(cuid())
+  userId         String
+  userName       String?
+  period         String
+  targetAmount   Float
+  achievedAmount Float    @default(0)
+  orgId          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, period])
+  @@index([orgId])
 }

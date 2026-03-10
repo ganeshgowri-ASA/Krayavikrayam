@@ -1,0 +1,42 @@
+{
+  "name": "krayavikrayam",
+  "version": "1.0.0",
+  "description": "AI-native Sales &amp; Marketing CRM/ERP SaaS - Agentic AI, Chatbots, Pipeline Management, Next.js Vercel + Railway PostgreSQL",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:43887/git/ganeshgowri-ASA/Krayavikrayam"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
+    "@types/node": "^25.4.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.27",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.3.1",
+    "lucide-react": "^0.577.0",
+    "next": "^14.2.35",
+    "pg": "^8.20.0",
+    "postcss": "^8.5.8",
+    "prisma": "^7.4.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^4.2.1",
+    "typescript": "^5.9.3"
+  }
+}

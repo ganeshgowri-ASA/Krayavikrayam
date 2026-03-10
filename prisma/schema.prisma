@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Service Tickets ───────────────────────────────────────
+
+enum TicketStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+model Ticket {
+  id          String         @id @default(cuid())
+  subject     String
+  description String
+  status      TicketStatus   @default(open)
+  priority    TicketPriority @default(medium)
+  contactId   String?        @map("contact_id")
+  assignedTo  String?        @map("assigned_to")
+  orgId       String         @map("org_id")
+  slaDeadline DateTime?      @map("sla_deadline")
+  resolvedAt  DateTime?      @map("resolved_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  comments    TicketComment[]
+  csatSurvey  CsatSurvey?
+
+  @@map("tickets")
+}
+
+model TicketComment {
+  id         String   @id @default(cuid())
+  ticketId   String   @map("ticket_id")
+  userId     String   @map("user_id")
+  content    String
+  isInternal Boolean  @default(false) @map("is_internal")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_comments")
+}
+
+model SlaRule {
+  id                  String         @id @default(cuid())
+  name                String
+  priority            TicketPriority
+  responseTimeHours   Int            @map("response_time_hours")
+  resolutionTimeHours Int            @map("resolution_time_hours")
+  orgId               String         @map("org_id")
+  createdAt           DateTime       @default(now()) @map("created_at")
+
+  @@map("sla_rules")
+}
+
+model KnowledgeBase {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  category    String
+  orgId       String   @map("org_id")
+  isPublished Boolean  @default(false) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("knowledge_base")
+}
+
+model CsatSurvey {
+  id        String   @id @default(cuid())
+  ticketId  String   @unique @map("ticket_id")
+  rating    Int?
+  feedback  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("csat_surveys")
+}
+
+// ─── ERP-Light ─────────────────────────────────────────────
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sku         String
+  price       Float
+  currency    String   @default("USD")
+  orgId       String   @map("org_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  invoiceItems InvoiceItem[]
+  quoteItems   QuoteItem[]
+
+  @@map("products")
+}
+
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique @map("invoice_number")
+  contactId     String?       @map("contact_id")
+  accountId     String?       @map("account_id")
+  status        InvoiceStatus @default(draft)
+  dueDate       DateTime?     @map("due_date")
+  totalAmount   Float         @default(0) @map("total_amount")
+  orgId         String        @map("org_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  items    InvoiceItem[]
+  payments Payment[]
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id        String @id @default(cuid())
+  invoiceId String @map("invoice_id")
+  productId String @map("product_id")
+  quantity  Int    @default(1)
+  unitPrice Float  @map("unit_price")
+  total     Float
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  invoiceId   String   @map("invoice_id")
+  amount      Float
+  paymentDate DateTime @map("payment_date")
+  method      String
+  reference   String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// ─── CPQ (Configure-Price-Quote) ───────────────────────────
+
+enum QuoteStatus {
+  draft
+  sent
+  accepted
+  rejected
+}
+
+model Quote {
+  id          String      @id @default(cuid())
+  quoteNumber String      @unique @map("quote_number")
+  dealId      String?     @map("deal_id")
+  contactId   String?     @map("contact_id")
+  status      QuoteStatus @default(draft)
+  validUntil  DateTime?   @map("valid_until")
+  totalAmount Float       @default(0) @map("total_amount")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  items QuoteItem[]
+
+  @@map("quotes")
+}
+
+model QuoteItem {
+  id              String @id @default(cuid())
+  quoteId         String @map("quote_id")
+  productId       String @map("product_id")
+  quantity        Int    @default(1)
+  unitPrice       Float  @map("unit_price")
+  discountPercent Float  @default(0) @map("discount_percent")
+
+  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("quote_items")
+}

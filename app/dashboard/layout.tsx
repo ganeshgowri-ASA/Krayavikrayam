@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AIChatbot } from "@/app/components/ai-chatbot";
 import {
   LayoutDashboard, Users, Building2, TrendingUp, BarChart3, DollarSign,
   Mail, Megaphone, Share2, Radio, Ticket, BookOpen, FileText, Package,
@@ -131,6 +132,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
+      <AIChatbot />
     </div>
   );
 }

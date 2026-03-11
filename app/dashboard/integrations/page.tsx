@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
-import { Mail, Calendar, MessageCircle, CreditCard, Bell, Webhook } from "lucide-react";
+import { Mail, Calendar, MessageCircle, CreditCard, Bell, Webhook, Globe, BookOpen, RefreshCw } from "lucide-react";
 
 interface Integration {
   id: string;
@@ -93,6 +93,34 @@ const integrations: Integration[] = [
     connected: false,
     configFields: [
       { key: "zapierWebhookUrl", label: "Zapier Webhook URL", type: "text", placeholder: "https://hooks.zapier.com/..." },
+    ],
+  },
+  {
+    id: "stripe",
+    name: "Stripe",
+    description: "Accept international payments, subscription billing, and automated invoicing via Stripe",
+    icon: Globe,
+    color: "text-violet-600 bg-violet-50",
+    category: "Payments",
+    connected: false,
+    configFields: [
+      { key: "stripePublishableKey", label: "Publishable Key", type: "text", placeholder: "pk_live_..." },
+      { key: "stripeSecretKey", label: "Secret Key", type: "password", placeholder: "sk_live_..." },
+      { key: "stripeWebhookSecret", label: "Webhook Secret", type: "password", placeholder: "whsec_..." },
+    ],
+  },
+  {
+    id: "xero",
+    name: "Xero",
+    description: "Sync accounting data, bank feeds, and reconciliation with Xero cloud accounting",
+    icon: RefreshCw,
+    color: "text-sky-600 bg-sky-50",
+    category: "Accounting",
+    connected: false,
+    configFields: [
+      { key: "xeroClientId", label: "Client ID", type: "text", placeholder: "Xero app client ID" },
+      { key: "xeroClientSecret", label: "Client Secret", type: "password", placeholder: "Xero app client secret" },
+      { key: "xeroTenantId", label: "Tenant ID", type: "text", placeholder: "Your Xero organization tenant ID" },
     ],
   },
 ];

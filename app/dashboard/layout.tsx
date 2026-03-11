@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, Building2, TrendingUp, BarChart3, DollarSign,
   Mail, Megaphone, Share2, Radio, Ticket, BookOpen, FileText, Package,
-  FileCheck, Bot, Zap, Puzzle, Settings, Menu
+  FileCheck, Bot, Zap, Puzzle, Settings, Menu, Landmark, TrendingDown,
+  Scale, BookMarked, Receipt, ShoppingCart, FolderOpen
 } from "lucide-react";
 import { useState } from "react";
 
@@ -30,6 +31,7 @@ const navSections = [
     items: [
       { href: "/dashboard/pipeline", label: "Pipeline", icon: TrendingUp },
       { href: "/dashboard/deals", label: "Deals", icon: DollarSign },
+      { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
       { href: "/dashboard/forecasting", label: "Forecasting", icon: BarChart3 },
     ],
   },
@@ -50,6 +52,17 @@ const navSections = [
       { href: "/dashboard/invoices", label: "Invoices", icon: FileText },
       { href: "/dashboard/products", label: "Products", icon: Package },
       { href: "/dashboard/quotes", label: "Quotes", icon: FileCheck },
+      { href: "/dashboard/documents", label: "Documents", icon: FolderOpen },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { href: "/dashboard/finance", label: "Overview", icon: Landmark },
+      { href: "/dashboard/finance/profit-loss", label: "P&L Statement", icon: TrendingDown },
+      { href: "/dashboard/finance/balance-sheet", label: "Balance Sheet", icon: Scale },
+      { href: "/dashboard/finance/ledger", label: "Ledger", icon: BookMarked },
+      { href: "/dashboard/finance/tax-credits", label: "Tax & Credits", icon: Receipt },
     ],
   },
   {

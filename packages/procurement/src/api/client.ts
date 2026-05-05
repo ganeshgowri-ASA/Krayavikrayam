@@ -15,6 +15,23 @@ import {
   MOCK_VENDORS,
 } from "./mock";
 
+/**
+ * Base URL of the antaryami-os FastAPI procurement copilot.
+ * Configure via NEXT_PUBLIC_PROCUREMENT_COPILOT_URL on Vercel; empty
+ * string falls back to the in-process mock layer.
+ */
+export const PROCUREMENT_COPILOT_URL =
+  (typeof process !== "undefined" &&
+    process.env?.NEXT_PUBLIC_PROCUREMENT_COPILOT_URL) ||
+  "";
+
+export function copilotEndpoint(path: string): string {
+  if (!PROCUREMENT_COPILOT_URL) return "";
+  const base = PROCUREMENT_COPILOT_URL.replace(/\/$/, "");
+  const suffix = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${suffix}`;
+}
+
 export const procurementKeys = {
   all: ["procurement"] as const,
   rfqs: (filters?: RfqFilters) => ["procurement", "rfqs", filters ?? {}] as const,

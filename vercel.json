@@ -2,6 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "regions": ["iad1"],
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_PROCUREMENT_COPILOT_URL": "@next_public_procurement_copilot_url"
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_PROCUREMENT_COPILOT_URL": "@next_public_procurement_copilot_url"
+  },
   "rewrites": [
     { "source": "/api/v1/:path*", "destination": "/api/v1/:path*" }
   ],

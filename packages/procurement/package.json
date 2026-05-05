@@ -1,0 +1,11 @@
+{
+  "name": "@krayavikrayam/procurement",
+  "version": "0.2.0",
+  "private": true,
+  "description": "RFx Manager vertical (RFQ list, vendor 360, offer diff, query thread).",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@anahatasri/procurement-bridge": "git+https://github.com/ganeshgowri-ASA/jnana-setu.git#e5f972a8dff3adb93149154e4f20aa4452f24a9a"
+  }
+}

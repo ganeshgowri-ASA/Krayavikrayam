@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.0.0",
+    "@anahatasri/procurement-bridge": "git+https://github.com/ganeshgowri-ASA/jnana-setu.git#e5f972a8dff3adb93149154e4f20aa4452f24a9a",
     "@anthropic-ai/sdk": "^0.78.0",
     "@auth/prisma-adapter": "^2.0.0",
     "@dnd-kit/core": "^6.3.1",

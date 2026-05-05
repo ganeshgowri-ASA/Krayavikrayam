@@ -33,6 +33,7 @@ const navSections = [
       { href: "/dashboard/pipeline", label: "Pipeline", icon: TrendingUp },
       { href: "/dashboard/deals", label: "Deals", icon: DollarSign },
       { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
+      { href: "/dashboard/procurement", label: "Procurement", icon: ShoppingCart },
       { href: "/dashboard/forecasting", label: "Forecasting", icon: BarChart3 },
     ],
   },

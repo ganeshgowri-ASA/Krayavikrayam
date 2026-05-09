@@ -1,0 +1,11 @@
+// Prisma schema stub for apps/api.
+// Models will be added in subsequent tickets.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

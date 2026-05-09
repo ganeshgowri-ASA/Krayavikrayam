@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import type { Rfq, RfqFilters, RfqStatus } from "../../types";
 import { useRfqs } from "../../api/client";
 import { useSavedViews } from "../../store/saved-views";
+import { MOCK_RFQS } from "../../api/mock";
 import { uniq } from "../../lib/utils";
 import { FacetedFilter, type FacetOption } from "./faceted-filter";
 import { SavedViewsBar } from "./saved-views";
@@ -31,41 +32,48 @@ export function RfqListPage() {
     [filters, search]
   );
 
-  const { data: rows = [], isLoading } = useRfqs(merged);
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
+  const { data, isLoading } = useRfqs(merged, page, pageSize);
+  const rows = data?.items ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   const buyerOptions: FacetOption[] = useMemo(() => {
     const seen = new Map<string, string>();
-    rows.forEach((r) => seen.set(r.buyer.id, r.buyer.name));
+    MOCK_RFQS.forEach((r) => seen.set(r.buyer.id, r.buyer.name));
     return Array.from(seen, ([value, label]) => ({ value, label }));
-  }, [rows]);
+  }, []);
 
   const countryOptions: FacetOption[] = useMemo(
     () =>
-      uniq(rows.map((r) => r.plant.country))
+      uniq(MOCK_RFQS.map((r) => r.plant.country))
         .sort()
         .map((c) => ({ value: c, label: c })),
-    [rows]
+    []
   );
   const plantOptions: FacetOption[] = useMemo(() => {
     const seen = new Map<string, string>();
-    rows.forEach((r) => seen.set(r.plant.id, r.plant.name));
+    MOCK_RFQS.forEach((r) => seen.set(r.plant.id, r.plant.name));
     return Array.from(seen, ([value, label]) => ({ value, label }));
-  }, [rows]);
+  }, []);
   const materialOptions: FacetOption[] = useMemo(
     () =>
-      uniq(rows.flatMap((r) => r.materialCodes))
+      uniq(MOCK_RFQS.flatMap((r) => r.materialCodes))
         .sort()
         .map((c) => ({ value: c, label: c })),
-    [rows]
+    []
   );
 
   const set = <K extends keyof RfqFilters>(key: K, value: RfqFilters[K]) => {
     setFilters((f) => ({ ...f, [key]: value }));
+    setPage(1);
   };
 
   const reset = () => {
     setFilters({});
     setSearch("");
+    setPage(1);
   };
 
   const [vendorId, setVendorId] = useState<string | null>(null);
@@ -91,7 +99,9 @@ export function RfqListPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Request for Quotes</h1>
           <p className="text-sm text-muted-foreground">
-            {isLoading ? "Loading…" : `${rows.length} matching RFQs`}
+            {isLoading
+              ? "Loading…"
+              : `${total} matching RFQs · page ${page} of ${totalPages}`}
           </p>
         </div>
         <div className="flex gap-2">
@@ -108,14 +118,23 @@ export function RfqListPage() {
         </div>
       </header>
 
-      <SavedViewsBar currentFilters={merged} onApply={(f) => setFilters(f)} />
+      <SavedViewsBar
+        currentFilters={merged}
+        onApply={(f) => {
+          setFilters(f);
+          setPage(1);
+        }}
+      />
 
       <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3">
         <div className="relative">
           <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search RFQ…"
             className="h-8 w-64 pl-7 text-sm"
           />
@@ -187,6 +206,28 @@ export function RfqListPage() {
       </div>
 
       <RfqTable rows={rows} onRowClick={onRowClick} />
+
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page <= 1 || isLoading}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Previous
+        </Button>
+        <span className="text-xs text-muted-foreground">
+          Page {page} / {totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page >= totalPages || isLoading}
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+        >
+          Next
+        </Button>
+      </div>
 
       <Vendor360Drawer
         vendorId={vendorId}

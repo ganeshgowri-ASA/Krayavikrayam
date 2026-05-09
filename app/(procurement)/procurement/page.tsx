@@ -1,4 +1,4 @@
-import { RfqListPage } from "@procurement/index";
+import { MswProvider, RfqListPage } from "@procurement/index";
 
 export const metadata = {
   title: "Procurement · RFx Manager",
@@ -6,5 +6,9 @@ export const metadata = {
 };
 
 export default function ProcurementRouteGroupPage() {
-  return <RfqListPage />;
+  return (
+    <MswProvider>
+      <RfqListPage />
+    </MswProvider>
+  );
 }

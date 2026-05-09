@@ -10,6 +10,7 @@ import {
   Megaphone,
   Package,
   Settings,
+  ShoppingBag,
   ShoppingCart,
   Users,
 } from "lucide-react";
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Orders", href: "/dashboard/orders", icon: ShoppingCart },
+  { name: "Purchase Orders", href: "/dashboard/purchase-orders", icon: ShoppingBag },
   { name: "Products", href: "/dashboard/products", icon: Package },
   { name: "Customers", href: "/dashboard/customers", icon: Users },
   { name: "Marketing", href: "/dashboard/marketing/campaigns", icon: Megaphone },

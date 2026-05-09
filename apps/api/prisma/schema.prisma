@@ -1,0 +1,177 @@
+// Krayavikrayam API — TBE (Technical Bid Evaluation) schema.
+// Mirrors docs/TBE-SCHEMA.md §2.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum TBECategory {
+  TCPS
+  PID
+  EQUIPMENT
+  FOUR_IN_ONE
+  UV2
+  GENERIC
+}
+
+enum TBEStatus {
+  draft
+  in_review
+  approved
+  rejected
+}
+
+enum TBEDataType {
+  text
+  number
+  enum
+  boolean
+  file
+}
+
+enum TBEComplianceFlag {
+  Y
+  N
+  P
+}
+
+// ─── RFQ / Supplier stubs (FK targets only; full models live elsewhere) ─────
+
+model RFQ {
+  id        String   @id @default(cuid())
+  reference String?  @unique
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tbes TBE[]
+}
+
+model Supplier {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tbeSuppliers TBESupplier[]
+  responses    TBEResponse[]
+  scores       TBEScore[]
+}
+
+// ─── TBE Core ───────────────────────────────────────────────────────────────
+
+model TBE {
+  id          String      @id @default(cuid())
+  rfqId       String
+  title       String
+  category    TBECategory
+  evaluatorId String?
+  status      TBEStatus   @default(draft)
+  createdAt   DateTime    @default(now())
+  approvedAt  DateTime?
+
+  rfq        RFQ            @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  sections   TBESection[]
+  criteria   TBECriterion[]
+  suppliers  TBESupplier[]
+  responses  TBEResponse[]
+  scores     TBEScore[]
+
+  @@index([rfqId])
+  @@index([status])
+}
+
+model TBESection {
+  id       String @id @default(cuid())
+  tbeId    String
+  name     String
+  sequence Int
+
+  tbe      TBE            @relation(fields: [tbeId], references: [id], onDelete: Cascade)
+  criteria TBECriterion[]
+
+  @@unique([tbeId, sequence])
+  @@index([tbeId])
+}
+
+model TBECriterion {
+  id            String      @id @default(cuid())
+  tbeId         String
+  sectionId     String
+  sequence      Int
+  code          String
+  name          String
+  specification String?
+  unit          String?
+  dataType      TBEDataType @default(text)
+  mandatory     Boolean     @default(false)
+  weight        Float?
+  enumOptions   String[]    @default([])
+
+  tbe       TBE           @relation(fields: [tbeId], references: [id], onDelete: Cascade)
+  section   TBESection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  responses TBEResponse[]
+
+  @@unique([tbeId, code])
+  @@index([sectionId])
+}
+
+model TBESupplier {
+  id           String  @id @default(cuid())
+  tbeId        String
+  supplierId   String
+  displayOrder Int
+  quotationRef String?
+
+  tbe       TBE           @relation(fields: [tbeId], references: [id], onDelete: Cascade)
+  supplier  Supplier      @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  responses TBEResponse[]
+
+  @@unique([tbeId, supplierId])
+  @@index([tbeId])
+}
+
+model TBEResponse {
+  id              String             @id @default(cuid())
+  tbeId           String
+  criterionId     String
+  supplierId      String
+  tbeSupplierId   String
+  quotedValue     String?
+  complianceFlag  TBEComplianceFlag?
+  deviation       String?
+  remarks         String?
+  attachmentUrl   String?
+  score           Float?
+
+  tbe         TBE          @relation(fields: [tbeId], references: [id], onDelete: Cascade)
+  criterion   TBECriterion @relation(fields: [criterionId], references: [id], onDelete: Cascade)
+  supplier    Supplier     @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  tbeSupplier TBESupplier  @relation(fields: [tbeSupplierId], references: [id], onDelete: Cascade)
+
+  @@unique([criterionId, supplierId])
+  @@index([tbeId])
+}
+
+model TBEScore {
+  id              String  @id @default(cuid())
+  tbeId           String
+  supplierId      String
+  totalScore      Float   @default(0)
+  normalizedScore Float   @default(0)
+  rank            Int?
+  recommended     Boolean @default(false)
+
+  tbe      TBE      @relation(fields: [tbeId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+
+  @@unique([tbeId, supplierId])
+  @@index([tbeId])
+}

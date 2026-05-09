@@ -1,0 +1,14 @@
+{
+  "templateKey": "equipment-tracker",
+  "category": "EQUIPMENT",
+  "title": "Equipment Procurement Tracker Template",
+  "sections": [
+    { "name": "Identification", "sequence": 1, "criteria": [] },
+    { "name": "Vendor", "sequence": 2, "criteria": [] },
+    { "name": "Delivery Schedule", "sequence": 3, "criteria": [] },
+    { "name": "Inspection", "sequence": 4, "criteria": [] },
+    { "name": "Dispatch", "sequence": 5, "criteria": [] },
+    { "name": "GRN", "sequence": 6, "criteria": [] },
+    { "name": "Payment", "sequence": 7, "criteria": [] }
+  ]
+}

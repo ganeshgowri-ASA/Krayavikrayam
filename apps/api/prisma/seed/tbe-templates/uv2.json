@@ -1,0 +1,14 @@
+{
+  "templateKey": "uv2",
+  "category": "UV2",
+  "title": "UV2 Comparison Template",
+  "sections": [
+    { "name": "General", "sequence": 1, "criteria": [] },
+    { "name": "UV Source", "sequence": 2, "criteria": [] },
+    { "name": "Optics", "sequence": 3, "criteria": [] },
+    { "name": "Control", "sequence": 4, "criteria": [] },
+    { "name": "Safety", "sequence": 5, "criteria": [] },
+    { "name": "Documentation", "sequence": 6, "criteria": [] },
+    { "name": "Commercial", "sequence": 7, "criteria": [] }
+  ]
+}

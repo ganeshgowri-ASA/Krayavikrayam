@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Krayavikrayam
 
-## Getting Started
+Krayavikrayam (क्रयविक्रयम्) is a procurement platform covering the buy-sell lifecycle: purchase requests, RFQs, supplier negotiation, orders (POs), GRN, invoicing, and three-way match.
 
-First, run the development server:
+This repository (`ganeshgowri-ASA/Krayavikrayam`) is the single source of truth. All work is tracked as `KV-<TRACK><PARENT>.<CHILD>` sessions; see the index below.
+
+## Documentation
+
+- [Product Requirements (v3)](docs/PRD-v3.md) — current PRD; supersedes v2.
+- [TBE Schema](docs/TBE-SCHEMA.md) — Technical/Bid Evaluation data model.
+- [Claude Sessions (v3)](docs/CLAUDE-SESSIONS-v3.md) — session playbook and umbrella tracks.
+- [Session Index](docs/SESSION-INDEX.md) — live list of bite-sized child sessions, IDs, and Definition of Done.
+
+## Stack
+
+- **Web**: Next.js 14 (App Router), TypeScript, Tailwind.
+- **API**: Express + TypeScript + Prisma (schema only at this stage; no generate/migrate in postinstall or build).
+- **Shared**: `packages/ui` (components), `packages/config` (eslint/tsconfig/tailwind presets).
+- **Tooling**: pnpm workspaces, ESLint (flat), Prettier, Husky, lint-staged, commitlint, Vitest, Playwright.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+See individual `apps/*` and `packages/*` READMEs for app-specific scripts.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Web (`apps/web`)**: deployed to **Vercel**. See [`DEPLOY.md`](DEPLOY.md) and [`vercel.json`](vercel.json).
+- **API (`apps/api`)**: deployed to **Railway**. Prisma `generate`/`migrate` run as explicit deploy steps — never in `postinstall` or `build`.
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. Branches and PR titles follow the `KV-<id>` convention from the [Session Index](docs/SESSION-INDEX.md).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](LICENSE)

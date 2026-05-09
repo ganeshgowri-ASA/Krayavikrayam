@@ -15,7 +15,9 @@
         "postinstall": "prisma generate",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:procurement": "vitest run packages/procurement"
+    "test:procurement": "vitest run packages/procurement",
+    "test:scripts": "vitest run scripts",
+    "ingest:tbe": "tsx scripts/ingest-tbe-xlsx.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -72,6 +74,7 @@
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.0",
+    "xlsx": "^0.18.5",
     "zod": "^3.23.8",
     "zustand": "^5.0.11"
   },

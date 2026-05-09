@@ -17,3 +17,8 @@ export { RfqListPage } from "./components/rfq-list/rfq-list-page";
 export { RfqTable } from "./components/rfq-list/rfq-table";
 export { FacetedFilter } from "./components/rfq-list/faceted-filter";
 export { SavedViewsBar } from "./components/rfq-list/saved-views";
+
+export * from "./orders";
+export { ensureOrdersWorker } from "./orders/browser";
+export { OrdersListPage } from "./components/orders-list/orders-list-page";
+export { OrderDetailPage } from "./components/orders-detail/order-detail-page";

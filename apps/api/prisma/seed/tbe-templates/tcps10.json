@@ -1,0 +1,14 @@
+{
+  "templateKey": "tcps10",
+  "category": "TCPS",
+  "title": "TCPS10 Comparison Template",
+  "sections": [
+    { "name": "General", "sequence": 1, "criteria": [] },
+    { "name": "Ratings", "sequence": 2, "criteria": [] },
+    { "name": "Insulation", "sequence": 3, "criteria": [] },
+    { "name": "Protection", "sequence": 4, "criteria": [] },
+    { "name": "Testing", "sequence": 5, "criteria": [] },
+    { "name": "Documentation", "sequence": 6, "criteria": [] },
+    { "name": "Commercial", "sequence": 7, "criteria": [] }
+  ]
+}

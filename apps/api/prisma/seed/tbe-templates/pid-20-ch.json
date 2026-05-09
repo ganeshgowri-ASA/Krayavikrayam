@@ -1,0 +1,15 @@
+{
+  "templateKey": "pid-20-ch",
+  "category": "PID",
+  "title": "PID 20-Channel Comparison Template",
+  "sections": [
+    { "name": "General", "sequence": 1, "criteria": [] },
+    { "name": "Channel Spec", "sequence": 2, "criteria": [] },
+    { "name": "Signal Type", "sequence": 3, "criteria": [] },
+    { "name": "Accuracy", "sequence": 4, "criteria": [] },
+    { "name": "Environmental", "sequence": 5, "criteria": [] },
+    { "name": "Communication", "sequence": 6, "criteria": [] },
+    { "name": "Documentation", "sequence": 7, "criteria": [] },
+    { "name": "Commercial", "sequence": 8, "criteria": [] }
+  ]
+}

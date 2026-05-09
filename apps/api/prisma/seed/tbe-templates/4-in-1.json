@@ -1,0 +1,15 @@
+{
+  "templateKey": "4-in-1",
+  "category": "FOUR_IN_ONE",
+  "title": "4-in-1 Comparison Template",
+  "sections": [
+    { "name": "General", "sequence": 1, "criteria": [] },
+    { "name": "Functional Group A", "sequence": 2, "criteria": [] },
+    { "name": "Functional Group B", "sequence": 3, "criteria": [] },
+    { "name": "Functional Group C", "sequence": 4, "criteria": [] },
+    { "name": "Functional Group D", "sequence": 5, "criteria": [] },
+    { "name": "Common Utilities", "sequence": 6, "criteria": [] },
+    { "name": "Documentation", "sequence": 7, "criteria": [] },
+    { "name": "Commercial", "sequence": 8, "criteria": [] }
+  ]
+}

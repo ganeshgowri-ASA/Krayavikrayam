@@ -1,0 +1,7 @@
+# Drop the five reference TBE comparison spreadsheets here:
+#   TCPS10_Comparison_File.xlsx
+#   PID-20-Ch-Comparison-File.xlsx
+#   Equipment-procurement-tracker.xlsx
+#   4-in-1-Comparison-File.xlsx
+#   UV2_Comparison_File.xlsx
+# Then run: npm run ingest:tbe

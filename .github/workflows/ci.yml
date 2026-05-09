@@ -1,43 +1,45 @@
 name: CI
 
 on:
-  push:
-    branches: [main, feat/*]
   pull_request:
+  push:
     branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: ${{ matrix.node }}
+          cache: pnpm
 
       - name: Install dependencies
-        # --ignore-scripts so the root postinstall (`prisma generate &&
-        # prisma db push`) doesn't try to reach a database CI can't
-        # provision. `prisma generate` is invoked explicitly below.
-        run: npm ci --ignore-scripts
+        run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma Client
-        run: npx prisma generate
+      - name: Lint
+        run: pnpm -r lint
 
-      # Procurement vertical: scoped gates while src/server tech-debt is
-      # tracked in a follow-up issue. See tsconfig.procurement.json.
-      - name: Type check (procurement scope)
-        run: npx tsc -p tsconfig.procurement.json
+      - name: Typecheck
+        run: pnpm -r typecheck
 
-      - name: Test (procurement)
-        run: npm run test:procurement
+      - name: Test
+        run: pnpm -r test --if-present
 
-      # Production build is validated by Vercel's preview deploy. The
-      # repo's `npm run build` runs `prisma db push` against a live DB,
-      # which CI doesn't provision; tracked alongside src/server tech
-      # debt in #16.
+      - name: Build
+        run: pnpm -r build

@@ -52,8 +52,10 @@ Set these in each platform's project settings before the first deploy.
 
 ## Vercel notes
 
-- `vercel.json` sets `framework: "nextjs"` and `rootDirectory: "apps/web"`. Do
-  not override the build command; let Vercel auto-detect Next.js.
+- `vercel.json` sets `framework: "nextjs"`. The Vercel project's **Root
+  Directory** must be set to `apps/web` in **Project Settings → General**
+  (Vercel rejects `rootDirectory` as a `vercel.json` field). Do not override
+  the build command; let Vercel auto-detect Next.js.
 - Do **not** add `prisma generate` to the build command. Prisma's client is
   generated as part of the package's own build step.
 - Add env vars via `vercel env add <NAME> production|preview|development` or

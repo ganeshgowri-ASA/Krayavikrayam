@@ -84,3 +84,22 @@ vite.config.ts.timestamp-*
 
 /src/generated/prisma
 /generated/prisma
+
+# RAG -> TBE pipeline outputs (regenerated per-run, never committed)
+/evidence/*
+!/evidence/.gitkeep
+/deliverables/*
+!/deliverables/.gitkeep
+# Master TBE templates may carry vendor-confidential or licensed
+# content. Commit explicitly when you want a template tracked.
+/templates/*
+!/templates/.gitkeep
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*

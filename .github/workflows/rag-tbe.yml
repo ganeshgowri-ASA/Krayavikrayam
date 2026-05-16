@@ -1,0 +1,47 @@
+name: RAG -> TBE pipeline
+
+on:
+  push:
+    branches: [main, "feat/*", "claude/*"]
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - ".github/workflows/rag-tbe.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - ".github/workflows/rag-tbe.yml"
+
+jobs:
+  test:
+    name: pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        # Pinecone is never reached in CI -- tests inject a fake client.
+        # PINECONE_API_KEY is deliberately unset so any test that
+        # accidentally tries to hit the network fails fast.
+        env:
+          PINECONE_API_KEY: ""
+        run: pytest -ra -m "not integration"

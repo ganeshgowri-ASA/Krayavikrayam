@@ -1,0 +1,12 @@
+[project]
+name = "krayavikrayam-rag-tbe"
+version = "0.1.0"
+description = "RAG retrieval → TBE Excel + Word + email deliverables for equipment-procurement evaluation."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "integration: tests that talk to live Pinecone (skipped in CI)",
+]

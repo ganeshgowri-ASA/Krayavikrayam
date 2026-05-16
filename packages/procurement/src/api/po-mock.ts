@@ -1,0 +1,27 @@
+import type { PurchaseOrder } from "../types";
+
+export const MOCK_PURCHASE_ORDERS: PurchaseOrder[] = [
+  { poNo: "PO-2026-0001", supplier: "Tata Steel Ltd",          value: 2450000, status: "in_transit",   deliveryDate: "2026-05-12" },
+  { poNo: "PO-2026-0002", supplier: "Mahindra Logistics",      value: 185000,  status: "acknowledged", deliveryDate: "2026-05-15" },
+  { poNo: "PO-2026-0003", supplier: "Bharat Forge",            value: 1320000, status: "sent",         deliveryDate: "2026-05-22" },
+  { poNo: "PO-2026-0004", supplier: "Reliance Industries",     value: 5600000, status: "received",     deliveryDate: "2026-05-01" },
+  { poNo: "PO-2026-0005", supplier: "Larsen & Toubro",         value: 3450000, status: "in_transit",   deliveryDate: "2026-05-10" },
+  { poNo: "PO-2026-0006", supplier: "Asian Paints",            value: 245000,  status: "draft",        deliveryDate: "2026-06-01" },
+  { poNo: "PO-2026-0007", supplier: "Hindalco Industries",     value: 980000,  status: "acknowledged", deliveryDate: "2026-05-18" },
+  { poNo: "PO-2026-0008", supplier: "JSW Steel",               value: 1875000, status: "cancelled",    deliveryDate: "2026-04-28" },
+  { poNo: "PO-2026-0009", supplier: "Cipla Ltd",               value: 425000,  status: "received",     deliveryDate: "2026-04-25" },
+  { poNo: "PO-2026-0010", supplier: "Godrej Consumer",         value: 156000,  status: "sent",         deliveryDate: "2026-05-30" },
+  { poNo: "PO-2026-0011", supplier: "UltraTech Cement",        value: 2100000, status: "in_transit",   deliveryDate: "2026-05-09" },
+  { poNo: "PO-2026-0012", supplier: "Maruti Suzuki",           value: 6800000, status: "acknowledged", deliveryDate: "2026-06-05" },
+  { poNo: "PO-2026-0013", supplier: "Hero MotoCorp",           value: 540000,  status: "draft",        deliveryDate: "2026-06-12" },
+  { poNo: "PO-2026-0014", supplier: "Wipro Enterprises",       value: 312000,  status: "received",     deliveryDate: "2026-04-20" },
+  { poNo: "PO-2026-0015", supplier: "Bajaj Electricals",       value: 89000,   status: "sent",         deliveryDate: "2026-05-25" },
+  { poNo: "PO-2026-0016", supplier: "Hindustan Unilever",      value: 1245000, status: "in_transit",   deliveryDate: "2026-05-11" },
+  { poNo: "PO-2026-0017", supplier: "ITC Limited",             value: 720000,  status: "acknowledged", deliveryDate: "2026-05-19" },
+  { poNo: "PO-2026-0018", supplier: "Dabur India",             value: 138000,  status: "received",     deliveryDate: "2026-04-15" },
+  { poNo: "PO-2026-0019", supplier: "Sun Pharmaceuticals",     value: 2950000, status: "sent",         deliveryDate: "2026-05-28" },
+  { poNo: "PO-2026-0020", supplier: "Kirloskar Brothers",      value: 465000,  status: "cancelled",    deliveryDate: "2026-04-30" },
+  { poNo: "PO-2026-0021", supplier: "Voltas Limited",          value: 670000,  status: "draft",        deliveryDate: "2026-06-08" },
+  { poNo: "PO-2026-0022", supplier: "Havells India",           value: 215000,  status: "in_transit",   deliveryDate: "2026-05-13" },
+  { poNo: "PO-2026-0023", supplier: "Dr Reddy's Laboratories", value: 1580000, status: "acknowledged", deliveryDate: "2026-05-21" },
+];

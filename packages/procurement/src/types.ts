@@ -136,3 +136,31 @@ export interface SavedView {
   isDefault?: boolean;
   createdAt: string;
 }
+
+export type PoStatus =
+  | "draft"
+  | "sent"
+  | "acknowledged"
+  | "in_transit"
+  | "received"
+  | "cancelled";
+
+export interface PurchaseOrder {
+  poNo: string;
+  supplier: string;
+  value: number;
+  status: PoStatus;
+  deliveryDate: string;
+}
+
+export interface PoListFilters {
+  search?: string;
+  status?: PoStatus[];
+}
+
+export interface PoListResult {
+  rows: PurchaseOrder[];
+  total: number;
+  page: number;
+  pageSize: number;
+}

@@ -54,6 +54,10 @@ export default function ProcurementCopilotPage() {
         <p className="mt-1 text-xs text-muted-foreground">
           Backend status: {backendUrl ? `connected to ${backendUrl}` : "not configured (set NEXT_PUBLIC_PROCUREMENT_API_URL)"}
         </p>
+        <p className="mt-3 text-sm">
+          <a href="/procurement/tbe" className="underline">→ TBE Scoring Engine</a> &nbsp;·&nbsp;
+          deterministic vendor scoring driven by <code>06-scripts/fill_tbe.py</code>.
+        </p>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2">

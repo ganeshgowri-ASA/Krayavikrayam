@@ -84,3 +84,10 @@ vite.config.ts.timestamp-*
 
 /src/generated/prisma
 /generated/prisma
+
+# TBE Python pipeline
+06-scripts/.venv/
+06-scripts/__pycache__/
+06-scripts/uv.lock
+**/__pycache__/
+*.pyc

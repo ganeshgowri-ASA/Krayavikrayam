@@ -13,6 +13,7 @@ export default defineConfig({
       "src/**/*.{test,spec}.{ts,tsx}",
       "mocks/**/*.{test,spec}.{ts,tsx}",
       "lib/**/*.{test,spec}.{ts,tsx}",
+      "app/**/*.{test,spec}.{ts,tsx}",
     ],
     css: false,
   },

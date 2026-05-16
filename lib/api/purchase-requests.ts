@@ -41,9 +41,10 @@ export function buildPurchaseRequestUrl(
 
 export async function fetchPurchaseRequests(
   params: PurchaseRequestQuery,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  base = "/api/purchase-requests"
 ): Promise<PurchaseRequestListResponse> {
-  const res = await fetch(buildPurchaseRequestUrl(params), {
+  const res = await fetch(buildPurchaseRequestUrl(params, base), {
     headers: { Accept: "application/json" },
     signal,
   });

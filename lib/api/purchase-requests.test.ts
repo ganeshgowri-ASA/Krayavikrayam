@@ -1,6 +1,8 @@
-// @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { buildPurchaseRequestUrl } from "./purchase-requests";
+import {
+  buildPurchaseRequestUrl,
+  fetchPurchaseRequests,
+} from "./purchase-requests";
 
 describe("buildPurchaseRequestUrl", () => {
   it("omits empty params", () => {
@@ -24,9 +26,11 @@ describe("buildPurchaseRequestUrl", () => {
 });
 
 describe("fetchPurchaseRequests via MSW", () => {
+  const origin = "http://test.local";
+
   it("returns paginated mock data over the network boundary", async () => {
     const res = await fetch(
-      "http://test.local/api/purchase-requests?page=1&pageSize=5"
+      `${origin}/api/purchase-requests?page=1&pageSize=5`
     ).then((r) => r.json());
     expect(res.page).toBe(1);
     expect(res.pageSize).toBe(5);
@@ -36,10 +40,23 @@ describe("fetchPurchaseRequests via MSW", () => {
 
   it("respects the tab filter end-to-end", async () => {
     const res = await fetch(
-      "http://test.local/api/purchase-requests?tab=pending&pageSize=50"
+      `${origin}/api/purchase-requests?tab=pending&pageSize=50`
     ).then((r) => r.json());
     for (const pr of res.items as Array<{ status: string }>) {
       expect(pr.status).toBe("PENDING_APPROVAL");
     }
+  });
+
+  it("threads search through fetchPurchaseRequests against MSW", async () => {
+    const target = await fetch(
+      `${origin}/api/purchase-requests?pageSize=1`
+    ).then((r) => r.json());
+    const number = target.items[0].number;
+    const res = await fetchPurchaseRequests(
+      { search: number },
+      undefined,
+      `${origin}/api/purchase-requests`
+    );
+    expect(res.items.some((pr) => pr.number === number)).toBe(true);
   });
 });

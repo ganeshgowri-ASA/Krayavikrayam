@@ -2,21 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-}
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --surface: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --muted: 215 16% 47%;
+    --border: 214 32% 91%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --danger: 0 84% 60%;
+    --focus: 217 91% 60%;
+    color-scheme: light;
+  }
 
-html,
-body {
-  height: 100%;
-}
+  .dark {
+    --background: 222 47% 8%;
+    --surface: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --muted: 215 20% 65%;
+    --border: 217 33% 22%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --danger: 0 84% 60%;
+    --focus: 217 91% 70%;
+    color-scheme: dark;
+  }
 
-body {
-  @apply bg-slate-50 text-slate-900 antialiased;
-}
+  html,
+  body {
+    height: 100%;
+  }
 
-/* Visible focus ring for keyboard users */
-:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--focus));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }

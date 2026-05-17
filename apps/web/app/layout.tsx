@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Sidebar } from "@/components/sidebar";
-import { TopBar } from "@/components/topbar";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,33 +8,31 @@ export const metadata: Metadata = {
     "Krayavikrayam buyer portal: purchase requests, RFQs, orders, inspection, and more.",
 };
 
+const NO_FLASH_THEME = `
+(function() {
+  try {
+    var stored = localStorage.getItem('kvk-theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var theme = stored === 'dark' || stored === 'light'
+      ? stored
+      : (prefersDark ? 'dark' : 'light');
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+  } catch (_) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: NO_FLASH_THEME }} />
+      </head>
       <body>
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-1.5 focus:text-sm focus:shadow"
-        >
-          Skip to main content
-        </a>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <TopBar />
-            <main
-              id="main-content"
-              tabIndex={-1}
-              className="flex-1 overflow-y-auto px-6 py-6"
-            >
-              {children}
-            </main>
-          </div>
-        </div>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

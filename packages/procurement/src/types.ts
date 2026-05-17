@@ -136,3 +136,55 @@ export interface SavedView {
   isDefault?: boolean;
   createdAt: string;
 }
+
+export type PoStatus =
+  | "draft"
+  | "open"
+  | "partially_received"
+  | "received"
+  | "closed"
+  | "cancelled";
+
+export interface PurchaseOrder {
+  id: string;
+  number: string;
+  vendorId: string;
+  plantId: string;
+  status: PoStatus;
+  totalValue: Money;
+  createdAt: string;
+  expectedDeliveryDate: string;
+}
+
+export type GrnStatus = "pending" | "posted" | "cancelled";
+
+export interface Grn {
+  id: string;
+  number: string;
+  poId: string;
+  status: GrnStatus;
+  receivedAt: string | null;
+}
+
+export type InvoiceStatus =
+  | "pending"
+  | "matched"
+  | "approved"
+  | "paid"
+  | "disputed";
+
+export interface Invoice {
+  id: string;
+  number: string;
+  poId: string;
+  vendorId: string;
+  status: InvoiceStatus;
+  amount: Money;
+  receivedAt: string;
+}
+
+export interface OrdersKpis {
+  openPoCount: number;
+  grnPendingCount: number;
+  invoicesPendingCount: number;
+}

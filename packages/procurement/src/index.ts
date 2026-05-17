@@ -17,3 +17,6 @@ export { RfqListPage } from "./components/rfq-list/rfq-list-page";
 export { RfqTable } from "./components/rfq-list/rfq-table";
 export { FacetedFilter } from "./components/rfq-list/faceted-filter";
 export { SavedViewsBar } from "./components/rfq-list/saved-views";
+
+export { KpiCard, type KpiCardProps } from "./components/kpi-card";
+export { OrdersPageShell } from "./components/orders/orders-page";

@@ -1,5 +1,12 @@
 import type {
+  Grn,
+  GrnStatus,
+  Invoice,
+  InvoiceStatus,
   OfferVersion,
+  OrdersKpis,
+  PoStatus,
+  PurchaseOrder,
   QueryThread,
   Rfq,
   RfqStatus,
@@ -164,3 +171,88 @@ export const MOCK_QUERY_THREADS: QueryThread[] = [
 ];
 
 export const MOCK_USERS = buyers;
+
+const PO_STATUSES: PoStatus[] = [
+  "draft",
+  "open",
+  "partially_received",
+  "received",
+  "closed",
+  "cancelled",
+];
+
+const GRN_STATUSES: GrnStatus[] = ["pending", "posted", "cancelled"];
+
+const INVOICE_STATUSES: InvoiceStatus[] = [
+  "pending",
+  "matched",
+  "approved",
+  "paid",
+  "disputed",
+];
+
+export const MOCK_PURCHASE_ORDERS: PurchaseOrder[] = Array.from(
+  { length: 40 },
+  (_, i) => {
+    const plant = pick(plants, i);
+    const status = pick(PO_STATUSES, i + 1);
+    const value = 10_000 + ((i * 4567) % 500_000);
+    return {
+      id: `po-${i + 1}`,
+      number: `PO-2026-${String(2000 + i).padStart(5, "0")}`,
+      vendorId: `v${(i % 8) + 1}`,
+      plantId: plant.id,
+      status,
+      totalValue: {
+        amount: value,
+        currency: i % 3 === 0 ? "EUR" : i % 3 === 1 ? "USD" : "INR",
+      },
+      createdAt: daysFromNow(-((i * 3) % 90) - 1),
+      expectedDeliveryDate: daysFromNow(((i * 5) % 45) - 10),
+    };
+  }
+);
+
+export const MOCK_GRNS: Grn[] = Array.from({ length: 25 }, (_, i) => {
+  const po = MOCK_PURCHASE_ORDERS[i % MOCK_PURCHASE_ORDERS.length]!;
+  const status = pick(GRN_STATUSES, i);
+  return {
+    id: `grn-${i + 1}`,
+    number: `GRN-2026-${String(3000 + i).padStart(5, "0")}`,
+    poId: po.id,
+    status,
+    receivedAt: status === "posted" ? daysFromNow(-(i % 20)) : null,
+  };
+});
+
+export const MOCK_INVOICES: Invoice[] = Array.from({ length: 30 }, (_, i) => {
+  const po = MOCK_PURCHASE_ORDERS[i % MOCK_PURCHASE_ORDERS.length]!;
+  const status = pick(INVOICE_STATUSES, i + 2);
+  return {
+    id: `inv-${i + 1}`,
+    number: `INV-2026-${String(4000 + i).padStart(5, "0")}`,
+    poId: po.id,
+    vendorId: po.vendorId,
+    status,
+    amount: po.totalValue,
+    receivedAt: daysFromNow(-(i % 30)),
+  };
+});
+
+const OPEN_PO_STATUSES: ReadonlySet<PoStatus> = new Set([
+  "open",
+  "partially_received",
+]);
+
+export function getOrdersKpis(
+  pos: PurchaseOrder[] = MOCK_PURCHASE_ORDERS,
+  grns: Grn[] = MOCK_GRNS,
+  invoices: Invoice[] = MOCK_INVOICES
+): OrdersKpis {
+  return {
+    openPoCount: pos.filter((p) => OPEN_PO_STATUSES.has(p.status)).length,
+    grnPendingCount: grns.filter((g) => g.status === "pending").length,
+    invoicesPendingCount: invoices.filter((inv) => inv.status === "pending")
+      .length,
+  };
+}

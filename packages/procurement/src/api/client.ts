@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type {
   OfferVersion,
+  OrdersKpis,
   QueryThread,
   Rfq,
   RfqFilters,
@@ -13,6 +14,7 @@ import {
   MOCK_QUERY_THREADS,
   MOCK_RFQS,
   MOCK_VENDORS,
+  getOrdersKpis,
 } from "./mock";
 
 /**
@@ -40,6 +42,7 @@ export const procurementKeys = {
   offers: (rfqId: string, vendorId: string) =>
     ["procurement", "offers", rfqId, vendorId] as const,
   threads: (rfqId: string) => ["procurement", "threads", rfqId] as const,
+  ordersKpis: () => ["procurement", "orders", "kpis"] as const,
 };
 
 const SIMULATED_LATENCY_MS = 150;
@@ -119,5 +122,17 @@ export function useQueryThreads(rfqId: string | null) {
     queryKey: procurementKeys.threads(rfqId ?? "none"),
     queryFn: () => fetchQueryThreads(rfqId!),
     enabled: !!rfqId,
+  });
+}
+
+export async function fetchOrdersKpis(): Promise<OrdersKpis> {
+  return wait(getOrdersKpis());
+}
+
+export function useOrdersKpis() {
+  return useQuery({
+    queryKey: procurementKeys.ordersKpis(),
+    queryFn: fetchOrdersKpis,
+    staleTime: 30_000,
   });
 }

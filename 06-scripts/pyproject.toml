@@ -1,0 +1,8 @@
+[project]
+name = "krayavikrayam-tbe"
+version = "0.1.0"
+description = "Deterministic TBE scoring engine (UV-2 and other PV-test packages)."
+requires-python = ">=3.11"
+dependencies = [
+    "openpyxl>=3.1.2",
+]

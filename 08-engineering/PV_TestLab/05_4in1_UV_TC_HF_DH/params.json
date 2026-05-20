@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "equipment": {
+    "id": "05_4IN1_COMBO_2MOD",
+    "name": "4-in-1 Combo Chamber (TC + HF + DH + UV, 2 module)",
+    "model": "COMBO_4in1_2MOD_v01.f3d",
+    "primary_standard": "IEC 61215-2 MQT 10, 11, 12, 13",
+    "site": "Reliance Dhirubhai Ambani Green Energy Giga Complex, Jamnagar",
+    "agent_owner": ".claude/agents/06-4in1-2mod.md"
+  },
+
+  "specifications": {
+    "module_count": { "value": 2, "unit": "modules" },
+    "module_length_mm": { "value": 2000, "unit": "mm", "ref": "IEC 61215-2 default M10 DUT" },
+    "module_width_mm":  { "value": 1050, "unit": "mm", "ref": "IEC 61215-2 default M10 DUT" },
+    "envelope_outer_LxWxH_mm": { "value": "1800x1200x2000", "unit": "mm" },
+    "envelope_inner_LxWxH_mm": { "value": "1400x800x1600", "unit": "mm" },
+
+    "mode_a_tc_temp_min_C": { "value": -40, "unit": "°C", "ref": "IEC 61215-2 MQT 11" },
+    "mode_a_tc_temp_max_C": { "value": 85,  "unit": "°C", "ref": "IEC 61215-2 MQT 11" },
+    "mode_a_tc_tol_C":     { "value": 2,   "unit": "°C", "ref": "IEC 61215-2 MQT 11" },
+    "mode_a_tc_ramp_max":  { "value": 100, "unit": "°C/h", "ref": "IEC 61215-2 MQT 11" },
+
+    "mode_b_hf_rh_percent": { "value": 85, "unit": "%RH",  "ref": "IEC 61215-2 MQT 12" },
+    "mode_b_hf_temp_high":  { "value": 85, "unit": "°C",   "ref": "IEC 61215-2 MQT 12" },
+
+    "mode_c_dh_temp_C":  { "value": 85, "unit": "°C", "ref": "IEC 61215-2 MQT 13 + IEC 60068-2-78" },
+    "mode_c_dh_rh":      { "value": 85, "unit": "%RH","ref": "IEC 61215-2 MQT 13 + IEC 60068-2-78" },
+    "mode_c_dh_duration":{ "value": 1000, "unit": "h", "ref": "IEC 61215-2 MQT 13" },
+
+    "mode_d_uv_band_nm":      { "value": "280-400", "unit": "nm", "ref": "IEC 61215-2 MQT 10" },
+    "mode_d_uv_dose_kWh":     { "value": 15,  "unit": "kWh/m² (min)", "ref": "IEC 61215-2 MQT 10" },
+    "mode_d_uv_module_temp":  { "value": 60,  "unit": "°C ±5",        "ref": "IEC 61215-2 MQT 10" },
+    "mode_d_uv_uniformity":   { "value": 15,  "unit": "% max",         "ref": "IEC 61215-2 MQT 10" },
+
+    "refrigeration_topology":  { "value": "cascade (2-stage)", "ref": "Agent 06 HVACR design" },
+    "refrigerant_high_stage":  { "value": "R507A", "unit": null, "ref": "design choice" },
+    "refrigerant_low_stage":   { "value": "R23",   "unit": null, "ref": "design choice" },
+    "evaporator_temp_C":       { "value": -45, "unit": "°C", "ref": "cascade design target" },
+    "condenser_temp_C":        { "value": 40,  "unit": "°C", "ref": "cascade design target" }
+  },
+
+  "safety": {
+    "estop_count": null,
+    "light_curtain": { "value": "IFM OYA1210-30-2-12-P-1", "unit": "set", "ref": "ifm.com CAD" },
+    "interlocks": [
+      { "name": "UV door interlock", "spec": "disables UV when door open", "ref": "IEC 61215-2 MQT 10 safety note" },
+      { "name": "HV interlock",      "spec": "n/a (no HV in this chamber)" }
+    ],
+    "lockout_tagout": { "value": "compressors + UV ballasts + steam boiler", "unit": "loto points" }
+  },
+
+  "operation": {
+    "pre_checks": [
+      "Verify compressor oil level + sight-glass",
+      "Verify steam boiler water level",
+      "Verify UV-A radiometer calibration date < 12 months",
+      "Run leak rate test on chamber seals: < 5 % RH drop in 1 h at 85/85"
+    ],
+    "cycle": [
+      { "name": "MODE A — TC",  "description": "−40 → +85 °C, 200 cycles, ramp ≤100 °C/h, dwell ≥10 min", "duration": "200 h" },
+      { "name": "MODE B — HF",  "description": "TC + 85 % RH; 10 cycles", "duration": "100 h" },
+      { "name": "MODE C — DH",  "description": "85 °C / 85 % RH steady-state, 1000 h", "duration": "1000 h" },
+      { "name": "MODE D — UV",  "description": "60 °C ±5; UV dose ≥15 kWh/m² in 280-400 nm", "duration": "≈ 150 h at 100 W/m²" }
+    ]
+  },
+
+  "maintenance": {
+    "daily":     { "value": "Drain water trap; visual; HMI alarm log" },
+    "weekly":    { "value": "PT100 cross-check vs reference; UV irradiance check" },
+    "quarterly": { "value": "UV lamp replacement when accumulated dose > 80 % of rated" },
+    "annual":    { "value": "NABL recalibration of T/RH sensors + UV radiometer; refrigerant moisture check" }
+  },
+
+  "production": {
+    "sequence": [
+      { "name": "Frame + panel install", "duration": "1.5 d", "owner": "Mech" },
+      { "name": "Refrigeration loop install + brazing + leak test", "duration": "2 d", "owner": "HVACR" },
+      { "name": "Steam humidifier + condensate pan", "duration": "0.5 d", "owner": "HVACR" },
+      { "name": "UV array install + ballasts + safety door", "duration": "1 d", "owner": "Electrical" },
+      { "name": "Electrical cabinet + PLC + HMI", "duration": "1.5 d", "owner": "Controls" },
+      { "name": "Sensor harness + cable dressing", "duration": "1 d", "owner": "Instrumentation" },
+      { "name": "Empty-chamber FAT (uniformity, leak rate, UV irradiance)", "duration": "0.5 d", "owner": "QA" },
+      { "name": "DUT-loaded SAT (full IEC 61215 reference cycle)", "duration": "1 wk", "owner": "QA + Customer" },
+      { "name": "Documentation handover", "duration": "0.5 d", "owner": "PM" }
+    ]
+  },
+
+  "rendering": {
+    "key_views": ["3/4 iso exterior closed", "3/4 iso open + 2 DUTs",
+                  "front elevation dimensioned", "UV-array close-up", "exploded"],
+    "scenes": ["exploded", "door-open + DUT load", "operation-loop", "UV-array deploy"]
+  },
+
+  "boq_refs": [
+    "Kingspan:PIR-150",
+    "Jindal:SS304-1.5",
+    "IFM:OYA1210-30-2-12-P-1",
+    "BITZER:cascade-pair (selection via BITZER Select)",
+    "Q-Lab:UVA-340 (or Philips TUV UVA-340)",
+    "Eurotherm:3508 PID controller",
+    "Rittal:42U-19in-rack",
+    "Eppendorf:UV-RAD-1525-V"
+  ],
+
+  "cross_refs": []
+}

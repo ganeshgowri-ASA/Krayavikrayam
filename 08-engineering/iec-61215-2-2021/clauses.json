@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0",
+  "standard": "IEC 61215-2:2021 Module Qualification Tests (MQT)",
+  "ref_pdf": "08-engineering/iec-61215-2-2021/IEC-61215-2-2021.pdf (place here, kept out of git)",
+  "module_geometry": {
+    "comment": "Default DUT geometry used to size every chamber unless RFQ overrides.",
+    "length_mm": 2000,
+    "width_mm": 1050,
+    "thickness_mm": 35,
+    "weight_kg": 27,
+    "wafer_class_default": "M10"
+  },
+  "mqt": {
+    "MQT_01": {
+      "name": "Visual inspection",
+      "spec": { "illumination_lux_min": 1000, "illumination_type": "diffuse" },
+      "equipment": "08_Visual_Inspection"
+    },
+    "MQT_02": {
+      "name": "Maximum power determination",
+      "equipment": "06_SteadyState_SunSimulator",
+      "depends_on": ["IEC 60904-9:2020"]
+    },
+    "MQT_03": {
+      "name": "Insulation test",
+      "spec": { "min_insulation_resistance_MOhm_per_m2": 40 },
+      "equipment": "09_Combined_Hipot_CS_RCOT_IVG"
+    },
+    "MQT_06": {
+      "name": "Performance at STC",
+      "spec": { "irradiance_W_per_m2": 1000, "module_temp_C": 25, "AM": 1.5 },
+      "equipment": "06_SteadyState_SunSimulator"
+    },
+    "MQT_09": {
+      "name": "NMOT / NOCT determination",
+      "equipment": "06_SteadyState_SunSimulator"
+    },
+    "MQT_10": {
+      "name": "UV preconditioning",
+      "spec": {
+        "spectral_band_nm": "280-400",
+        "dose_kWh_per_m2_min": 15,
+        "module_temp_C": 60,
+        "module_temp_tol_C": 5,
+        "uniformity_percent": 15
+      },
+      "equipment": "04_UV_Chamber"
+    },
+    "MQT_11": {
+      "name": "Thermal cycling (TC)",
+      "spec": {
+        "temp_min_C": -40,
+        "temp_max_C": 85,
+        "tol_C": 2,
+        "ramp_rate_C_per_h_max": 100,
+        "dwell_min_at_extreme_min": 10,
+        "cycles_min": 200
+      },
+      "equipment": ["01_TC_HF_Climate_Chamber", "05_4in1_UV_TC_HF_DH"]
+    },
+    "MQT_12": {
+      "name": "Humidity freeze (HF)",
+      "spec": {
+        "temp_high_C": 85,
+        "rh_high_percent": 85,
+        "temp_low_C": -40,
+        "cycles_min": 10
+      },
+      "equipment": ["01_TC_HF_Climate_Chamber", "05_4in1_UV_TC_HF_DH"]
+    },
+    "MQT_13": {
+      "name": "Damp heat (DH)",
+      "spec": {
+        "temp_C": 85,
+        "temp_tol_C": 2,
+        "rh_percent": 85,
+        "rh_tol_percent": 3,
+        "duration_h": 1000,
+        "ref": "IEC 60068-2-78"
+      },
+      "equipment": ["03_DH_Chamber", "05_4in1_UV_TC_HF_DH"]
+    },
+    "MQT_16": {
+      "name": "Static mechanical load (SMLT)",
+      "spec": {
+        "load_positive_Pa": 5400,
+        "load_negative_Pa": 2400,
+        "duration_per_load_min": 60,
+        "ref": "IEC 61215-2 §10.16"
+      },
+      "equipment": "MLT"
+    },
+    "MQT_17": {
+      "name": "Hail impact",
+      "spec": {
+        "ice_ball_diameter_mm_table": [25, 35, 45, 55, 65, 75],
+        "ice_ball_velocity_m_per_s_table": [23, 27.2, 30.7, 34.0, 36.7, 39.5],
+        "ref": "IEC 61215-2 Table 2"
+      },
+      "equipment": "07_Combined_Hail_MBT_FPT"
+    },
+    "MQT_21": {
+      "name": "Potential induced degradation (PID) + LeTID",
+      "spec": {
+        "temp_C": 85,
+        "rh_percent": 85,
+        "bias_V_DC_max": 1500,
+        "duration_h": 96,
+        "ref": "IEC TS 62804 for PID protocol"
+      },
+      "equipment": "02_LetID_PID_Supply"
+    }
+  },
+  "iec_62782_DMLT": {
+    "name": "Dynamic mechanical load (DMLT)",
+    "spec": {
+      "load_positive_Pa": 6000,
+      "load_negative_Pa": 5800,
+      "cycles_min": 1000
+    },
+    "equipment": "MLT"
+  },
+  "iec_62790_frame_pull": {
+    "name": "Frame pull test",
+    "spec": { "weight_N": 5, "duration_h": 24 },
+    "equipment": "07_Combined_Hail_MBT_FPT"
+  },
+  "iec_60904_9_solar_simulator": {
+    "name": "Solar simulator classification",
+    "classes": {
+      "spectral_match": "Class A (0.75-1.25 per waveband)",
+      "spatial_uniformity": "Class A (±2%)",
+      "temporal_stability": "Class A"
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "package": "UV-2",
+  "date": "2026-05-19",
+  "template": "01-templates/TBE-UV2.xlsx",
+  "evidence": "05-evidence/UV-2_evidence.md",
+  "output_xlsx": "07-output/TBE-UV2_filled_2026-05-19.xlsx",
+  "rows": 13,
+  "vendors": [
+    "Aster",
+    "ATT",
+    "Labtech",
+    "Zuvay",
+    "Stech",
+    "UFE",
+    "Zenitek",
+    "CME",
+    "Zealwe"
+  ],
+  "cells_filled": 243,
+  "capex_cells": 36,
+  "totals_per_vendor": {
+    "Aster": {
+      "score": 336,
+      "percent": 33.6
+    },
+    "UFE": {
+      "score": 301,
+      "percent": 30.1
+    },
+    "CME": {
+      "score": 178,
+      "percent": 17.8
+    },
+    "ATT": {
+      "score": 150,
+      "percent": 15.0
+    },
+    "Labtech": {
+      "score": 150,
+      "percent": 15.0
+    },
+    "Zenitek": {
+      "score": 150,
+      "percent": 15.0
+    },
+    "Zuvay": {
+      "score": 124,
+      "percent": 12.4
+    },
+    "Stech": {
+      "score": 124,
+      "percent": 12.4
+    },
+    "Zealwe": {
+      "score": 124,
+      "percent": 12.4
+    }
+  },
+  "anomalies": [
+    "ATT: warranty undeclared",
+    "Labtech: warranty undeclared",
+    "Zuvay: warranty undeclared",
+    "Stech: warranty undeclared",
+    "UFE: warranty undeclared",
+    "Zenitek: warranty undeclared",
+    "CME: warranty undeclared",
+    "Zealwe: warranty undeclared",
+    "Aster: India spare stock undeclared",
+    "ATT: India spare stock undeclared",
+    "Labtech: India spare stock undeclared",
+    "Zuvay: India spare stock undeclared",
+    "Stech: India spare stock undeclared",
+    "UFE: India spare stock undeclared",
+    "Zenitek: India spare stock undeclared",
+    "CME: India spare stock undeclared",
+    "Zealwe: India spare stock undeclared",
+    "Aster: SLA hours undeclared",
+    "ATT: SLA hours undeclared",
+    "Labtech: SLA hours undeclared",
+    "Zuvay: SLA hours undeclared",
+    "Stech: SLA hours undeclared",
+    "UFE: SLA hours undeclared",
+    "Zenitek: SLA hours undeclared",
+    "CME: SLA hours undeclared",
+    "Zealwe: SLA hours undeclared",
+    "Aster: lamp life undeclared",
+    "Aster: sensor traceability undeclared",
+    "ATT: lamp life undeclared",
+    "ATT: sensor traceability undeclared",
+    "Labtech: lamp life undeclared",
+    "Labtech: sensor traceability undeclared",
+    "Zuvay: lamp life undeclared",
+    "Zuvay: sensor traceability undeclared",
+    "Stech: lamp life undeclared",
+    "Stech: sensor traceability undeclared",
+    "UFE: lamp life undeclared",
+    "UFE: sensor traceability undeclared",
+    "Zenitek: lamp life undeclared",
+    "Zenitek: sensor traceability undeclared",
+    "CME: lamp life undeclared",
+    "CME: sensor traceability undeclared",
+    "Zealwe: lamp life undeclared",
+    "ATT: cannot score responsiveness without compliance tally",
+    "Labtech: cannot score responsiveness without compliance tally",
+    "Zuvay: cannot score responsiveness without compliance tally",
+    "Stech: cannot score responsiveness without compliance tally",
+    "Zenitek: cannot score responsiveness without compliance tally",
+    "CME: cannot score responsiveness without compliance tally",
+    "Zealwe: cannot score responsiveness without compliance tally",
+    "Aster: no digital integration declared (penalty \u22122 vs neutral)",
+    "ATT: no digital integration declared (penalty \u22122 vs neutral)",
+    "Labtech: no digital integration declared (penalty \u22122 vs neutral)",
+    "Zuvay: no digital integration declared (penalty \u22122 vs neutral)",
+    "Stech: no digital integration declared (penalty \u22122 vs neutral)",
+    "UFE: no digital integration declared (penalty \u22122 vs neutral)",
+    "Zenitek: no digital integration declared (penalty \u22122 vs neutral)",
+    "CME: no digital integration declared (penalty \u22122 vs neutral)",
+    "Zealwe: no digital integration declared (penalty \u22122 vs neutral)",
+    "Aster: no maturity signal (installed base / years / references all blank)",
+    "ATT: no maturity signal (installed base / years / references all blank)",
+    "Labtech: no maturity signal (installed base / years / references all blank)",
+    "Zuvay: no maturity signal (installed base / years / references all blank)",
+    "Stech: no maturity signal (installed base / years / references all blank)",
+    "UFE: no maturity signal (installed base / years / references all blank)",
+    "Zenitek: no maturity signal (installed base / years / references all blank)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)",
+    "unrouted: TOTAL (Weighted, max 1000)"
+  ]
+}

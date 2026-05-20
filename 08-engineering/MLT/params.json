@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "equipment": {
+    "name": "PV Mechanical Load Tester (MLT)",
+    "model": "MLT_trial.f3d v1.9.0",
+    "primary_standard": "IEC 61215 §10.16 (SMLT) + IEC TS 62782 (DMLT)",
+    "site": "Reliance Dhirubhai Ambani Green Energy Giga Complex, Jamnagar",
+    "serial": null
+  },
+
+  "specifications": {
+    "module_dut_max_length":  { "value": 3200, "unit": "mm",  "ref": "RFQ B-1" },
+    "module_dut_max_width":   { "value": 1500, "unit": "mm",  "ref": "RFQ B-1" },
+    "module_dut_default_length": { "value": 1650, "unit": "mm" },
+    "module_dut_default_width":  { "value":  992, "unit": "mm" },
+    "frame_extrusion":   { "value": "80x80 Al extrusion", "ref": "MLT_trial.f3d Step 2A" },
+    "frame_height":      { "value": 1200, "unit": "mm" },
+    "piston_grid":       { "value": "17 x 9 = 153 pistons", "ref": "Step 2C upgrade from 6x4" },
+    "active_pistons_default": { "value": 60, "unit": "pistons (for default 1650x992 DUT)" },
+    "smlt_load_positive_pa": { "value": 5400, "unit": "Pa", "ref": "IEC 61215 §10.16 SMLT +" },
+    "smlt_load_negative_pa": { "value": 2400, "unit": "Pa", "ref": "IEC 61215 §10.16 SMLT -" },
+    "dmlt_load_positive_pa": { "value": 6000, "unit": "Pa", "ref": "IEC TS 62782 DMLT +" },
+    "dmlt_load_negative_pa": { "value": 5800, "unit": "Pa", "ref": "IEC TS 62782 DMLT -" },
+    "suction_cup_count": { "value": null, "unit": "cups", "ref": "Step 2D Path γ — re-attach pending" },
+    "sensor_pt100_count": { "value": null, "ref": "Step 2E planned" },
+    "deflection_sensor": { "value": null, "ref": "Step 2E planned" },
+    "per_piston_load_cell": { "value": null, "ref": "Step 2E planned" },
+    "compressor_kw": { "value": 5.5, "unit": "kW", "ref": "Step 2G CDA compressor" },
+    "compressor_flow": { "value": 4.5, "unit": "m³/min", "ref": "Step 2G" }
+  },
+
+  "safety": {
+    "estop_count": { "value": null, "ref": "Step 2F planned" },
+    "light_curtain": null,
+    "acrylic_safety_cage": { "value": "Step 2F planned", "ref": "yellow I-beam pull frame + acrylic panels" },
+    "stack_light": { "value": "R/Y/G tower", "ref": "Step 2F planned" },
+    "lockout_tagout": null
+  },
+
+  "operation": {
+    "pre_checks": [
+      "Verify CDA compressor pressure within 6-7 bar",
+      "Verify all E-stops physically reset",
+      "Verify safety cage door interlock closed",
+      "Verify PT100 sensors reading within ±0.5 °C of ambient",
+      "Verify per-piston load cells zeroed",
+      "Run continuity loop test on DUT cable harness"
+    ],
+    "cycle": [
+      { "name": "DUT load",  "description": "Place module on suction-cup grid; activate suction; verify hold",         "duration": "120 s" },
+      { "name": "SMLT +",    "description": "Pressurise pistons to +5400 Pa over 1 min; hold 60 min; record deflection","duration": "61 min" },
+      { "name": "SMLT -",    "description": "Pressurise pistons to -2400 Pa over 1 min; hold 60 min; record deflection","duration": "61 min" },
+      { "name": "DMLT cycles", "description": "1000 cycles of ±1000 Pa per IEC TS 62782",                              "duration": "8 h" },
+      { "name": "Post-EL",   "description": "Electroluminescence scan after test; compare to baseline",                 "duration": "5 min" },
+      { "name": "DUT release", "description": "Vent suction; remove module; visual inspection",                         "duration": "120 s" }
+    ]
+  },
+
+  "maintenance": {
+    "daily":     { "value": "CDA water trap drain; visual cable check" },
+    "weekly":    { "value": "PT100 calibration check vs reference; load cell zero verification" },
+    "quarterly": { "value": "Pneumatic seal replacement on high-cycle pistons" },
+    "annual":    { "value": "Full IEC 61215 reference test; NABL recalibration of load cells + sensors" }
+  },
+
+  "production": {
+    "sequence": [
+      { "name": "Frame assembly",       "inputs": "80x80 Al extrusion bars, T-slot connectors", "tasks": "Cut to length, square-up jig, torque connectors to 25 Nm", "acceptance": "Diagonals match within ±0.5 mm", "duration": "1 day", "owner": "Mech" },
+      { "name": "Gantry + cable tray",  "inputs": "Crossbeams, cable tray, derived-pitch fasteners", "tasks": "Install crossbeams, route main cable tray", "acceptance": "Tray slope ≥ 1:200; no sag", "duration": "0.5 day", "owner": "Mech" },
+      { "name": "Piston grid install",  "inputs": "153 pistons + manifolds + pneumatic tubing", "tasks": "Install pistons in 17x9 grid; route pneumatic manifold; leak-test", "acceptance": "Leak rate < 0.1 bar/min at 6 bar", "duration": "2 days", "owner": "Mech + Pneumatics" },
+      { "name": "Suction cup re-attach (2D-bis)", "inputs": "Cup library, vacuum manifold", "tasks": "Mount cups per Path γ revised plan", "acceptance": "All cups hold 0.6 bar vacuum for 5 min on flat plate", "duration": "0.5 day", "owner": "Mech" },
+      { "name": "Sensor harness",       "inputs": "PT100, load cells, deflection LVDT", "tasks": "Mount sensors, route harness, wire to junction box", "acceptance": "All sensors register in HMI within ±0.5 % of ref", "duration": "1 day", "owner": "Instrumentation" },
+      { "name": "Electrical cabinet",   "inputs": "Drives, PLC, 24 V PSU, safety relays", "tasks": "Mount components, wire per drawing, ELV/LV segregation", "acceptance": "IR test > 50 MΩ; functional safety FAT pass", "duration": "1.5 days", "owner": "Electrical" },
+      { "name": "PLC + HMI commissioning", "inputs": "CODESYS project, HMI screens", "tasks": "Upload program, configure IO, tune control loops", "acceptance": "All sequences run within ±1 % of setpoint", "duration": "1 day", "owner": "Controls" },
+      { "name": "Empty-chamber FAT",    "inputs": "—", "tasks": "Run full cycle without DUT; verify safety interlocks", "acceptance": "All safety functions test pass; no false trips", "duration": "0.5 day", "owner": "QA" },
+      { "name": "DUT-loaded SAT",       "inputs": "Reference 1650x992 module", "tasks": "Run IEC 61215 §10.16 cycle on reference DUT", "acceptance": "EL scan matches baseline; deflection within ±2 mm of FEA prediction", "duration": "1 day", "owner": "QA + Customer" },
+      { "name": "Handover",             "inputs": "Operation manual, BoM, spare parts, training records", "tasks": "Customer training, document handover", "acceptance": "Customer sign-off", "duration": "0.5 day", "owner": "PM" }
+    ]
+  }
+}
